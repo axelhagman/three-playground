@@ -14,3 +14,22 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.data {
+  opacity: 0;
+  transition: opacity ease 1s;
+  position: relative;
+  display: flex;
+  line-height: 1em;
+  font-size: 0.75em;
+  width: 200px;
+  gap: 1em;
+  overflow: hidden;
+  pointer-events: none;
+  height: 12.5vw;
+  color: black;
+}
+
+.data.show {
+  opacity: 1;
+}
