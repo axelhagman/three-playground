@@ -113,6 +113,7 @@ const CameraGroup = ({ children, titleRef, basicInfoRef }) => {
   //       delta
   //     );
   //   });
+  const { scene } = useLoader(GLTFLoader, '/camera.gltf');
   const [cameraGroup] = useRefs();
   const scroll = useScroll();
   const { width, height } = useThree((state) => state.viewport);
@@ -133,7 +134,12 @@ const CameraGroup = ({ children, titleRef, basicInfoRef }) => {
     <>
       <Scroll>
         <group ref={cameraGroup}>
-          <CameraHead>
+          {/* <CameraHead>
+            <mesh position={[0, 0, 0]} scale={1.5}>
+              <primitive object={scene} />
+            </mesh>
+          </CameraHead> */}
+          {/* <CameraHead>
             <Cylinder
               args={[0.5, 0.5, 2]}
               rotation={[Math.PI * 0.5, 0, Math.PI * 0.15]}
@@ -147,7 +153,7 @@ const CameraGroup = ({ children, titleRef, basicInfoRef }) => {
             position={[0, -0.6, 0]}
           >
             <meshPhongMaterial attach='material' color='black' />
-          </Cylinder>
+          </Cylinder> */}
         </group>
       </Scroll>
     </>
@@ -182,7 +188,7 @@ const CameraScene = () => {
         </BasicInfoRef>
       </ContentContainer>
       <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-        <pointLight position={[100, 100, 100]} intensity={0.8} />
+        <pointLight position={[100, 100, 100]} intensity={2} />
         <hemisphereLight
           color='#ffffff'
           groundColor='#b9b9b9'

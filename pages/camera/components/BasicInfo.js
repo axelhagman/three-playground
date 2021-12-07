@@ -24,8 +24,24 @@ const BasicInfo = () => {
         accumsan tincidunt vel eu lorem.
       </h3>
       <InfoTextBlock
-        title='Lorem ipsum'
+        title='Lorem'
         text='Lorem ipsum dolor sit amet, adipiscing elit. Maecenas et enim vel odio
+        accumsan tincidunt vel eu lorem.'
+      />
+      <InfoTextBlock
+        title='Tincidunt'
+        text='Lorem ipsum dolor sit amet. Maecenas et enim vel odio
+        accumsan tincidunt vel eu lorem.'
+      />
+      <InfoTextBlock
+        title='Sit'
+        text='Lorem ipsum dolor sit amet, adipiscing elit. Maecenas et enim vel odio
+        accumsan tincidunt vel eu lorem. Lorem ipsum dolor sit amet, adipiscing elit.'
+      />
+      <InfoTextBlock
+        title='Vel eu'
+        text='Lorem ipsum dolor sit amet, adipiscing elit. Maecenas et enim vel odio
+        accumsan tincidunt vel eu lorem. Lorem ipsum dolor sit amet, adipiscing elit. Maecenas et enim vel odio
         accumsan tincidunt vel eu lorem.'
       />
     </Container>
