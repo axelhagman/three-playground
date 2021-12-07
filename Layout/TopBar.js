@@ -22,7 +22,10 @@ const TopBar = () => {
         <a style={{ width: '100%' }}>Cube</a>
       </Link>
       <Link href='/switch'>
-        <a style={{ width: '100%' }}>switch</a>
+        <a style={{ width: '100%' }}>Switch</a>
+      </Link>
+      <Link href='/camera'>
+        <a style={{ width: '100%' }}>Camera</a>
       </Link>
     </Container>
   );

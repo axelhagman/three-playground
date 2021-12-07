@@ -33,3 +33,11 @@ a {
 .data.show {
   opacity: 1;
 }
+
+.hide {
+  opacity: 0 !important;
+}
+
+.show {
+  opacity: 1 !important;
+}
