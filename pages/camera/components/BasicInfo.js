@@ -9,7 +9,7 @@ const Container = styled.div`
   padding: 3rem;
   height: 80vh;
   width: 50vw;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 1);
   border-radius: 3rem;
 `;
 
