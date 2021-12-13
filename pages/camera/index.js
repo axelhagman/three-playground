@@ -1,4 +1,4 @@
-import React, { useRef, useState, forwardRef, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense } from 'react';
 import styled from 'styled-components';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
@@ -18,33 +18,75 @@ import {
   Environment,
 } from '@react-three/drei';
 import useRefs from 'react-use-refs';
+import { useSpring, animated } from '@react-spring/three';
 
 import BasicInfo from './components/BasicInfo';
+import RegularContent from './components/RegularContent';
 
-const SceneContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
+`;
+
+const SceneScrollContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 140vh;
   background-color: transparent;
 `;
 
-const Background = styled.div`
-  position: absolute;
+const SceneStickyContainer = styled.div`
+  position: sticky;
+  top: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #1b1b22;
-  z-index: -2;
+  display: flex;
 `;
 
-const BackgroundCircle = styled.div`
-  position: absolute;
-  width: 80vw;
-  height: 80vw;
-  right: 10vw;
+const SceneRelativeContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+`;
+
+const BackgroundSlides = styled.div`
+  position: fixed;
   top: 0;
-  background: radial-gradient(rgba(190, 0, 232, 0.8), rgba(190, 0, 232, 0) 70%);
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #1b1b22;
   z-index: -1;
+`;
+
+const BackgroundSlice = styled.div`
+  position: absolute;
+  width: 40vw;
+  height: 120vw;
+  right: -10vw;
+  background-color: rgba(200, 47, 235, 1);
+  box-shadow: -1.5rem 0 2rem rgba(0, 0, 0, 1);
+  z-index: -1;
+  transition: all ease 1s;
+  top: ${({ rotated }) => (rotated ? '-60vh' : '-10vh')};
+  transform: ${({ rotated }) => (rotated ? 'rotate(-50deg)' : 'rotate(20deg)')};
+`;
+
+const BackgroundSliceDark = styled.div`
+  position: absolute;
+  width: 35vw;
+  height: 120vw;
+  right: -20vw;
+  transform: rotate(20deg);
+  background-color: rgb(155, 17, 186);
+  box-shadow: -1rem 0 2rem rgba(0, 0, 0, 0.5);
+  z-index: -1;
+  transition: all ease 1s;
+  top: ${({ rotated }) => (rotated ? '-60vh' : '-10vh')};
+  transform: ${({ rotated }) => (rotated ? 'rotate(-50deg)' : 'rotate(20deg)')};
 `;
 
 const ContentContainer = styled.div`
@@ -118,21 +160,24 @@ const CameraBody = () => {
   );
 };
 
-const CameraCase = () => {
+const CameraCase = ({ moveCase }) => {
   const { scene, nodes, materials } = useLoader(
     GLTFLoader,
     '/Camera_Case.gltf'
   );
+  const { position } = useSpring({
+    position: moveCase ? [0, 0, 5] : [0, 0, 0],
+  });
   return (
-    <mesh
-      position={[0, 0, 0]}
+    <animated.mesh
+      position={position}
       geometry={nodes.Case.geometry}
       material={materials.CaseBlue}
-    ></mesh>
+    ></animated.mesh>
   );
 };
 
-const CameraGroup = ({ children, titleRef, basicInfoRef }) => {
+const CameraGroup = ({ titleRef, basicInfoRef, scrollPosition }) => {
   //   const scroll = useScroll();
   //   const { width, height } = useThree((state) => state.viewport);
   //   const [cameraHead] = useRefs();
@@ -161,119 +206,115 @@ const CameraGroup = ({ children, titleRef, basicInfoRef }) => {
   //       delta
   //     );
   //   });
+  const [moveCase, setMoveCase] = useState(false);
+
   const [cameraGroup] = useRefs();
-  const scroll = useScroll();
   const { width, height } = useThree((state) => state.viewport);
   useFrame((state, delta) => {
-    const range1 = scroll.range(1 / 4, 1 / 4);
-    const range2 = scroll.range(3 / 4, 1 / 4);
     cameraGroup.current.position.x = THREE.MathUtils.damp(
       cameraGroup.current.position.x,
-      width * 0.3 * range1,
+      THREE.MathUtils.clamp(width * scrollPosition * 0.0015, 0, 2),
       4,
       delta
     );
-
-    // Horizontal
-    cameraGroup.current.rotation.y = THREE.MathUtils.lerp(
-      cameraGroup.current.rotation.y,
-      (state.mouse.x * Math.PI) / 10,
-      0.2
-    );
-
-    // Vertical
-    cameraGroup.current.rotation.x = THREE.MathUtils.lerp(
-      cameraGroup.current.rotation.x,
-      (-state.mouse.y * Math.PI) / 15,
-      0.2
-    );
-
-    titleRef.current.classList.toggle('hide', range1);
-    basicInfoRef.current.classList.toggle('show', range2);
   });
+
+  useEffect(() => {
+    titleRef.current.classList.toggle('hide', scrollPosition > 230);
+    basicInfoRef.current.classList.toggle('show', scrollPosition > 230);
+  }, [scrollPosition, titleRef, basicInfoRef]);
   return (
     <>
-      <Scroll>
-        <group ref={cameraGroup} rotation={[0, -Math.PI * 0.2, 0]}>
-          <CameraHead>
-            <CameraBody />
-            <CameraCase />
-          </CameraHead>
-        </group>
-      </Scroll>
+      <group
+        ref={cameraGroup}
+        onClick={() => setMoveCase(!moveCase)}
+        rotation={[0, -Math.PI * 0.2, 0]}
+      >
+        <CameraHead>
+          <CameraBody />
+          <CameraCase moveCase={moveCase} />
+        </CameraHead>
+      </group>
     </>
   );
 };
 
 const CameraScene = () => {
   const [title, basicInfo] = useRefs();
+  const [rotated, setRotated] = useState(false);
+
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const handleScroll = () => {
+    const position = window.pageYOffset;
+    setScrollPosition(position);
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (scrollPosition > 700) {
+      setRotated(true);
+    } else {
+      setRotated(false);
+    }
+  }, [scrollPosition]);
 
   return (
-    <SceneContainer>
-      <ContentContainer>
-        <TitleContainer ref={title}>
-          <h1 style={{ fontSize: 28, margin: 0, color: 'white' }}>
-            Introducing
-          </h1>
-          <FadeTitleContainer>
-            <h1
-              style={{
-                fontSize: 180,
-                margin: 0,
-                color: 'white',
-                lineHeight: 1,
-              }}
-            >
-              CCTX
-            </h1>
-          </FadeTitleContainer>
-        </TitleContainer>
-        <BasicInfoRef ref={basicInfo}>
-          <BasicInfo />
-        </BasicInfoRef>
-        <Background />
-        <BackgroundCircle />
-      </ContentContainer>
-      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-        <Suspense fallback={null}>
-          {/* <pointLight position={[100, 100, 100]} intensity={2} />
-          <hemisphereLight
-            color='#ffffff'
-            groundColor='#b9b9b9'
-            position={[-7, 25, 13]}
-            intensity={0.85}
-          /> */}
-          <Environment preset='dawn' />
+    <Container>
+      <SceneScrollContainer>
+        <SceneStickyContainer>
+          <SceneRelativeContainer>
+            <ContentContainer>
+              <TitleContainer ref={title}>
+                <h1 style={{ fontSize: 28, margin: 0, color: 'white' }}>
+                  Introducing
+                </h1>
+                <FadeTitleContainer>
+                  <h1
+                    style={{
+                      fontSize: 180,
+                      margin: 0,
+                      color: 'white',
+                      lineHeight: 1,
+                    }}
+                  >
+                    CCTX
+                  </h1>
+                </FadeTitleContainer>
+              </TitleContainer>
+              <BasicInfoRef ref={basicInfo}>
+                <BasicInfo />
+              </BasicInfoRef>
+            </ContentContainer>
+            <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+              <Suspense fallback={null}>
+                <Environment preset='dawn' />
 
-          <group position={[0, 0, 0]}>
-            <ScrollControls pages={1} damping={10}>
-              <CameraGroup titleRef={title} basicInfoRef={basicInfo} />
-              <OrbitControls />
-            </ScrollControls>
-            <ContactShadows
-              rotation-x={Math.PI / 2}
-              position={[0, -35, 0]}
-              opacity={0.25}
-              width={100}
-              height={100}
-              blur={2}
-              far={50}
-            />
-          </group>
-        </Suspense>
-      </Canvas>
-    </SceneContainer>
+                <group position={[0, 0, 0]}>
+                  <CameraGroup
+                    scrollPosition={scrollPosition}
+                    titleRef={title}
+                    basicInfoRef={basicInfo}
+                  />
+                </group>
+              </Suspense>
+            </Canvas>
+          </SceneRelativeContainer>
+        </SceneStickyContainer>
+      </SceneScrollContainer>
+      <RegularContent></RegularContent>
+      <BackgroundSlides>
+        <BackgroundSlice rotated={rotated} />
+        <BackgroundSliceDark rotated={rotated} />
+      </BackgroundSlides>
+    </Container>
   );
 };
-
-// const Tag = forwardRef(({ head, stat, expl, ...props }, ref) => {
-//     return (
-//       <Html ref={ref} className="data" center {...props}>
-//         <div>{head}</div>
-//         <h1>{stat}</h1>
-//         <h2>{expl}</h2>
-//       </Html>
-//     )
-//   })
 
 export default CameraScene;
