@@ -66,13 +66,13 @@ const BackgroundSlice = styled.div`
   position: absolute;
   width: 40vw;
   height: 120vw;
-  right: -10vw;
   background-color: rgba(200, 47, 235, 1);
-  box-shadow: -1.5rem 0 2rem rgba(0, 0, 0, 1);
+  box-shadow: -1rem 0 2rem rgba(0, 0, 0, 0.8);
   z-index: -1;
   transition: all ease 1s;
-  top: ${({ rotated }) => (rotated ? '-60vh' : '-10vh')};
-  transform: ${({ rotated }) => (rotated ? 'rotate(-50deg)' : 'rotate(20deg)')};
+  top: ${({ rotated }) => (rotated ? '0vh' : '-10vh')};
+  right: ${({ rotated }) => (rotated ? 'calc(-40vw + 5rem)' : '-10vw')};
+  transform: ${({ rotated }) => (rotated ? 'rotate(0deg)' : 'rotate(20deg)')};
 `;
 
 const BackgroundSliceDark = styled.div`
@@ -85,8 +85,9 @@ const BackgroundSliceDark = styled.div`
   box-shadow: -1rem 0 2rem rgba(0, 0, 0, 0.5);
   z-index: -1;
   transition: all ease 1s;
-  top: ${({ rotated }) => (rotated ? '-60vh' : '-10vh')};
-  transform: ${({ rotated }) => (rotated ? 'rotate(-50deg)' : 'rotate(20deg)')};
+  top: ${({ rotated }) => (rotated ? '0vh' : '-10vh')};
+  right: ${({ rotated }) => (rotated ? 'calc(-35vw + 2.5rem)' : '-20vw')};
+  transform: ${({ rotated }) => (rotated ? 'rotate(0deg)' : 'rotate(20deg)')};
 `;
 
 const ContentContainer = styled.div`
