@@ -41,6 +41,9 @@ const CopyContainer = styled.div`
 `;
 
 const FeatureCard = ({ variant }) => {
+  if (!variant) {
+    return null;
+  }
   return (
     <Container>
       <ImageContainer>
