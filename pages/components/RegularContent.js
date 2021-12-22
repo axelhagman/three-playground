@@ -216,9 +216,7 @@ const RegularContent = ({ windowDimensions, documentDimensions }) => {
                 </BounceContainer>
               </MaterialSlice>
               <MaterialSlice>
-                <BounceContainer animY={5} animOffset={0}>
-                  <ClipPath />
-                </BounceContainer>
+                <ClipPath />
               </MaterialSlice>
               {/* <MaterialSlice>
                 <Materials animate={materialsAnimate} />
