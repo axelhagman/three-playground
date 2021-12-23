@@ -101,7 +101,6 @@ const CameraPage = () => {
     } else {
       setHideCircles(false);
     }
-    if (window.visualViewport.height) console.log(scrollPosition);
   }, [scrollPosition]);
 
   return (

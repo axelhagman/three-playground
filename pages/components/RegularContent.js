@@ -105,17 +105,14 @@ const BlurContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  clip-path: url(#myClip);
   top: 0;
   left: 33px;
-  backdrop-filter: blur(5px);
 `;
 
 const isInViewport = (el, windowDimensions, documentDimensions) => {
   if (el?.current) {
     const rect = el.current.getBoundingClientRect();
     return (
-      rect.top >= 0 &&
       rect.left >= 0 &&
       rect.top + rect.height / 2 <=
         (windowDimensions.height || documentDimensions.height) &&
@@ -128,6 +125,7 @@ const isInViewport = (el, windowDimensions, documentDimensions) => {
 const RegularContent = ({ windowDimensions, documentDimensions }) => {
   const [materialsAnimate, setMaterialsAnimate] = useState(false);
   const ref = useRef();
+  const clipRef = useRef();
 
   useEffect(() => {
     if (ref) {
@@ -201,6 +199,8 @@ const RegularContent = ({ windowDimensions, documentDimensions }) => {
                     ? 'translateY(0px)'
                     : 'translateY(250px)',
                   transition: 'all ease 1s 0s',
+                  clipPath: clipRef ? 'url(#myClip)' : '',
+                  backdropFilter: clipRef ? 'blur(5px)' : '',
                 }}
               />
               <MaterialSlice
@@ -215,7 +215,7 @@ const RegularContent = ({ windowDimensions, documentDimensions }) => {
                   <PlasticMaterial />
                 </BounceContainer>
               </MaterialSlice>
-              <MaterialSlice>
+              <MaterialSlice ref={clipRef}>
                 <ClipPath />
               </MaterialSlice>
               {/* <MaterialSlice>
